@@ -27,7 +27,7 @@ def get_data():
 def text_processing():
     my_essay = grade_models.essay(entry.get("1.0",'end-1c'))
     #my_essay = grade_models.essay(entry.get())
-    grades = list(my_essay.rand_grading())    
+    grades = list(my_essay.svm_grading())    
     for i in range(0, len(grades)):
         grades[i] = '{:.1f}'.format(grades[i])
 
