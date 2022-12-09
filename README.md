@@ -20,8 +20,8 @@ We leveraged a pretrained BERT model to tokenize and encode our data. We then to
 Models         | Cohesion     | Syntax | Vocabulary | Phraseology | Grammar | Conventions |
 ---------------|--------------|--------|------------|-------------|---------|-------------|
 Baseline Model | 1.81         | 1.66   | 1.57       | 1.78        | 1.98    | 1.83        |
-SVM Model      | 1.28         |        |            |             |         |             |
-Decision Tree  | 2.49         |
+SVM Model      | 1.28         | 1.09   | 1.02       | 1.25        | 1.37    | 1.11        |
+Decision Tree  | 2.49         | 2.18   | 1.92       | 2.56        | 2.68    | 2.37.       |
 Random Forest  | 1.49         |
 KNN            | 1.52         |
 Gausian NB     | 2.99         |
