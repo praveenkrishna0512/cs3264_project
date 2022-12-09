@@ -13,7 +13,7 @@ Effective written communication is a crucial skill across all disciplines. It re
 * Grades an essay within a few seconds.
 
 
-# Our Solution
+# A Solution
 
 We leveraged a pretrained BERT model to tokenize and encode our data. We then took this vectorization and used it in standard machine learning models. The most important metric for this project was the average RSME across all 6 categories. We chose the model with the lowest average RSME which turned out to be an SVM model with RBF kernel. The RSME values from all the models are contained in the table below. The chosen SVM model with RBF kernel is in bold in the second row. 
 
@@ -28,7 +28,7 @@ Gausian NB     | 2.99         | 2.28      | 2.40       | 2.41        | 2.71    |
 Multinomial NB | 1.79         | 1.37      | 1.29       | 1.68        | 1.71    | 1.36        |
 LSTM + CNN     | 1.49         | 1.32      | 1.14       | 1.42        | 1.53    | 1.45        |
 
-# Our GUI
+# The GUI
 
 We encapsulated our best model in an easy to use GUI pictured below. Simply enter your text in the text box and click the button to have your essay graded. Grades in each of the six categories appear in around 3.5 seconds. 
 
