@@ -1,6 +1,6 @@
-## English Language Learners Automated Essay Grader
+# English Language Learners Automated Essay Grader #
 
-This project was completed as part of the Erdos Institute Fall 2022 Data Science Boot Camp. The team members were Jai Aslam, Anirban Sharma and Zhichao Carton Zeng. We were advised by Kashif Bari. The goal of the project was to create an automated essay grader for English language learners as proposed in [this Kaggle competition](https://www.kaggle.com/competitions/feedback-prize-english-language-learning/data).
+This project was completed as part of the Erdos Institute Fall 2022 Data Science Boot Camp. Our team members were Jai Aslam, Anirban Sharma and Zhichao Carton Zeng. We were advised by Kashif Bari. The goal of the project was to create an automated essay grader for English language learners as proposed in [this Kaggle competition](https://www.kaggle.com/competitions/feedback-prize-english-language-learning/data).
 
 # The Problem
 
@@ -15,7 +15,12 @@ Effective written communication is a crucial skill across all disciplines. It re
 
 # Our Solution
 
-We leveraged a pretrained BERT encoder
+We leveraged a pretrained BERT model to tokenize and encode our data. We then took this vectorization and used it in standard machine learning models. The most important metric for this project was the average RSME across all 6 categories. We chose the model with the lowest average RSME which turned out to be an SVM model with RBF kernel.
+
+First Header  | Second Header
+------------- | -------------
+Content Cell  | Content Cell
+Content Cell  | Content Cell
 
 
 ![Screenshot](documents/images/guiexample.png)
