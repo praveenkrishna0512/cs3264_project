@@ -46,7 +46,7 @@ There are three main ways we could improve our model. Due to time constraints we
 
 The BERT encoder comes with a maximum input size of 512 words. To get around this, we could split our essays into chunks, encode and grade the chunks. Then take the average of the grades for the chunks in one essay. 
 
-There are extra ELL writing samples available from a previous Kaggle competition, we could add them to our training data
+There are extra ELL writing samples available from a previous Kaggle competition, we could add them to our training data.
 
 Engineering features for 5 of our 6 categories is difficult given that this was our first introduction to NLP. Since the grades in the categories are correlated we tried to engineer some features for vocabulary. None of them improved our model. Given more time we could likely engineer features that would improve it.
 
