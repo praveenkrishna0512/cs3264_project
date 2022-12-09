@@ -17,10 +17,11 @@ Effective written communication is a crucial skill across all disciplines. It re
 
 We leveraged a pretrained BERT model to tokenize and encode our data. We then took this vectorization and used it in standard machine learning models. The most important metric for this project was the average RSME across all 6 categories. We chose the model with the lowest average RSME which turned out to be an SVM model with RBF kernel.
 
-First Header  | Second Header
-------------- | -------------
-Content Cell  | Content Cell
-Content Cell  | Content Cell
+Models         | Cohesion     | Syntax | Vocabulary | Phraseology | Grammar | Conventions |
+---------------|--------------|--------|------------|-------------|---------|-------------|
+Baseline Model | Content Cell |        |            |             |         |             |
+SVM Model      | Content Cell |        |            |             |         |             |
+
 
 
 ![Screenshot](documents/images/guiexample.png)
