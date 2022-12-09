@@ -19,9 +19,14 @@ We leveraged a pretrained BERT model to tokenize and encode our data. We then to
 
 Models         | Cohesion     | Syntax | Vocabulary | Phraseology | Grammar | Conventions |
 ---------------|--------------|--------|------------|-------------|---------|-------------|
-Baseline Model | Content Cell |        |            |             |         |             |
-SVM Model      | Content Cell |        |            |             |         |             |
-
+Baseline Model | 1.81         | 1.66   | 1.57       | 1.78        | 1.98    | 1.83        |
+SVM Model      | 1.28         |        |            |             |         |             |
+Decision Tree  | 2.49         |
+Random Forest  | 1.49         |
+KNN            | 1.52         |
+Gausian NB     | 2.99         |
+Multinomial NB | 1.79         |
+LSTM + CNN     | 1.49         |
 
 
 ![Screenshot](documents/images/guiexample.png)
