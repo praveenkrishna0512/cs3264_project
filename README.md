@@ -20,13 +20,13 @@ We leveraged a pretrained BERT model to tokenize and encode our data. We then to
 Models         | Cohesion     | Syntax | Vocabulary | Phraseology | Grammar | Conventions |
 ---------------|--------------|--------|------------|-------------|---------|-------------|
 Baseline Model | 1.81         | 1.66   | 1.57       | 1.78        | 1.98    | 1.83        |
-SVM Model      | 1.28         | 1.09   | 1.02       | 1.25        | 1.37    | 1.11        |
-Decision Tree  | 2.49         | 2.18   | 1.92       | 2.56        | 2.68    | 2.37.       |
-Random Forest  | 1.49         |
-KNN            | 1.52         |
-Gausian NB     | 2.99         |
-Multinomial NB | 1.79         |
-LSTM + CNN     | 1.49         |
+**SVM Model**  | **1.28**     | **1.09**  | **1.02**       | **1.25**       | **1.37**    | **1.11**        |
+Decision Tree  | 2.49         | 2.18   | 1.92       | 2.56        | 2.68    | 2.37        |
+Random Forest  | 1.49         | 1.25   | 1.09       | 1.38        | 1.43    | 1.31        |
+KNN            | 1.52         | 1.39   | 1.19       | 1.41        | 1.59    | 1.29        |
+Gausian NB     | 2.99         | 2.28   | 2.40       | 2.41        | 2.71    | 2.32        |
+Multinomial NB | 1.79         | 1.37   | 1.29       | 1.68        | 1.71    | 1.36        |
+LSTM + CNN     | 1.49         | 1.32   | 1.14       | 1.42        | 1.53    | 1.45        |
 
 
 ![Screenshot](documents/images/guiexample.png)
