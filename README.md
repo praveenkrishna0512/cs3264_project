@@ -48,5 +48,5 @@ The BERT encoder comes with a maximum input size of 512 words. To get around thi
 
 There are extra ELL writing samples available from a previous Kaggle competition, we could add them to our training data.
 
-Engineering features for 5 of our 6 categories is difficult given that this was our first introduction to NLP. Since the grades in the categories are correlated we tried to engineer some features for vocabulary. None of them improved our model. Given more time we could likely engineer features that would improve it.
+Engineering features for 5 of our 6 categories is difficult given that this was our first introduction to NLP. Since the grades in the categories are correlated we tried to engineer some features for vocabulary, but there is further room to engineer features for the other grading categories as well. 
 
