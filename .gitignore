@@ -1,2 +1,9 @@
 **/.DS_Store
 **/*.ipynb_checkpoints/
+
+./crawl-300d-2M.vec.zip
+./crawl-300d-2M.vec
+
+./data/Embedded_matrix_trained_data.csv
+./data/LSTM_model_final.json
+./data/LSTM_weights_final.h5
