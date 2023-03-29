@@ -8,6 +8,7 @@ from tensorflow.keras.layers import LSTM
 from tensorflow.keras.preprocessing.text import Tokenizer
 import csv
 import nltk
+nltk.download('stopwords')
 from tensorflow.keras.models import Model
 
 # %%
