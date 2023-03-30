@@ -234,7 +234,7 @@ def mcrmse(y_true, y_pred):
 # We will use the Adam optimizer
 # Configure hyperparameters and training callbacks here
 lr = 0.0001
-epochs = 1
+epochs = 100
 adam = tf.keras.optimizers.Adam(learning_rate=lr)
 logger.info(f"Initialising Model with lr = {lr}")
 
