@@ -186,17 +186,23 @@ def generate_embedding_matrix(token):
     vocab_size=5000
     embedding_index={}
     with open(embedding_path, 'r',encoding="utf8") as f:
-         for line in f:
-                values = line.rstrip().rsplit(' ')
-                word = values[0]
-                coefs = np.asarray(values[1:], dtype='float32')
-                embedding_index[word] = coefs
+        j = 0
+        for line in f:
+            values = line.rstrip().rsplit(' ')
+            word = values[0]
+            coefs = np.asarray(values[1:], dtype='float32')
+            embedding_index[word] = coefs
+            j += 1
+            print(j)
+        print(j)
     num_words = len(token.word_index) + 1
     embedding_matrix = np.zeros((num_words, embedding_size))
     for word, i in token.word_index.items():
         embedding_vector = embedding_index.get(word)
         if embedding_vector is not None:
             embedding_matrix[i] = embedding_vector
+        print(i)
+    print(i)
     return embedding_matrix
 
 # %% [markdown]
