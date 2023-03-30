@@ -1,4 +1,7 @@
 # %%
+import logging
+from pathlib import Path
+
 import tensorflow as tf
 from tensorflow.keras.preprocessing import sequence
 from tensorflow.keras.models import Sequential
@@ -20,8 +23,8 @@ import scipy
 from tensorflow.keras.initializers import he_normal,glorot_normal
 from tensorflow.keras.regularizers import l1,l2
 from tensorflow.python.keras.callbacks import TensorBoard
-from tensorflow.keras.callbacks import Callback, EarlyStopping, ModelCheckpoint,LearningRateScheduler,ReduceLROnPlateau
-from time import time
+from tensorflow.keras.callbacks import Callback, EarlyStopping, ModelCheckpoint,LearningRateScheduler,ReduceLROnPlateau, CSVLogger
+from time import asctime, time
 from tensorflow.keras.utils import plot_model
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import train_test_split
@@ -32,7 +35,7 @@ import string
 from sklearn.metrics import f1_score
 from tensorflow import keras
 import numpy as np
-import datetime
+from datetime import datetime
 import os
 import math
 import pandas as pd
@@ -43,9 +46,37 @@ from tensorflow.keras.initializers import glorot_uniform,glorot_normal
 from tensorflow.keras.layers import MaxPooling1D
 
 # %%
+# specify the directory path
+current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+experiment_tag = f"two---({current_time})"
+log_directory = Path(f'./log/{experiment_tag}')
+# data_directory = Path(f'./data/{current_time}')
+# create the directory if it does not already exist
+log_directory.mkdir(parents=True, exist_ok=True)
+# Logging matters
+logger = logging.getLogger()
+# create a logger object
+logger = logging.getLogger()
+# set the logging level
+logger.setLevel(logging.DEBUG)
+# create a file handler to write the log messages to a file
+log_filepath = f'{log_directory}/model-runtime.log'
+file_handler = logging.FileHandler(log_filepath)
+# create a stream handler to output the log messages to the console
+stream_handler = logging.StreamHandler()
+# set the formatter for the handlers
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(formatter)
+stream_handler.setFormatter(formatter)
+# add the handlers to the logger
+logger.addHandler(file_handler)
+logger.addHandler(stream_handler)
+
+# %%
 #loading the training data
-training_data=pd.read_csv("./data/train.csv")
-# display(training_data.head(2))
+training_data_filepath = "./data/train.csv"
+logger.info(f"Loading training data from {training_data_filepath}")
+training_data=pd.read_csv(training_data_filepath)
 
 
 # %% [markdown]
@@ -55,6 +86,7 @@ training_data=pd.read_csv("./data/train.csv")
 
 # %%
 # ref: https://stackoverflow.com/questions/19790188/expanding-english-language-contractions-in-python
+logger.info(f"DATA PROCESSING")
 def decontractions(phrase):
    
     # specific
@@ -110,6 +142,8 @@ def preprocess(text_col,stopword):
         # to lowercase
         preprocessed.append(sent.lower().strip())
     return preprocessed
+
+logger.info(f"Preprocessing now...")
 training_data['full_text']=preprocess(training_data['full_text'],stopword=False)
 
 # %%
@@ -117,10 +151,11 @@ training_data.head()
 
 # %%
 #Train -test split, 20% of the data for validation set.
+logger.info(f"Splitting training and test")
 y=training_data[['cohesion','syntax','vocabulary','phraseology','grammar','conventions']]
 X=training_data.drop(['text_id','cohesion','syntax','vocabulary','phraseology','grammar','conventions'],axis=1)
 X_train, X_test, y_train, y_test=train_test_split(X,y,test_size=0.20)
-print(X_train.shape,y_train.shape)
+logger.info(f"Split training and test: {X_train.shape}, {y_train.shape}")
 
 
 
@@ -138,10 +173,11 @@ def text_padding(train,test,max_len):
     padded_train_text=pad_text(train,token,max_len)
     padded_test_text=pad_text(test,token,max_len)
     return padded_train_text,padded_test_text,token
+
+logger.info(f"Padding text")
 comm_len=200
 train_com_pad,test_com_pad,token_com= text_padding(X_train['full_text'],X_test['full_text'],comm_len)
-
-print(train_com_pad.shape,test_com_pad.shape)
+logger.info(f"Padded text: {train_com_pad.shape}, {test_com_pad.shape}")
 
 # %%
 def generate_embedding_matrix(token):
@@ -168,19 +204,15 @@ def generate_embedding_matrix(token):
 
 # %%
 # generating the embedding matrix containing (if not already generated)
+logger.info(f"Generating embedding matrix")
+embedded_comm_filepath = './data/Embedded_matrix_trained_data.csv'
+# if not os.path.exists(embedded_comm_filepath):
 embedding_comm = generate_embedding_matrix(token_com)
-print(embedding_comm.shape)
-
-
-# %%
+logger.info(f"Generated embedding matrix: {embedding_comm.shape}\n")
 #Storing the embedded matrix for trained
-np.savetxt('./data/Embedded_matrix_trained_data.csv',embedding_comm,delimiter=',')
-
-# %%
+np.savetxt(embedded_comm_filepath, embedding_comm, delimiter=',')
 #Use the already stored embedded matrix for the trained data
-embedding_comm = np.loadtxt('./data/Embedded_matrix_trained_data.csv', delimiter=',')
-#print(embedding_comm1.shape)
-#print(embedding_comm1)
+embedding_comm = np.loadtxt(embedded_comm_filepath, delimiter=',')
 
 
 # %%
@@ -199,8 +231,30 @@ def mcrmse(y_true, y_pred):
 # # LSTM + CNN Model
 
 # %%
-# We will use the Adam optimizer 
-adam = tf.keras.optimizers.Adam(learning_rate=0.001)
+# We will use the Adam optimizer
+# Configure hyperparameters and training callbacks here
+lr = 0.0001
+epochs = 1
+adam = tf.keras.optimizers.Adam(learning_rate=lr)
+logger.info(f"Initialising Model with lr = {lr}")
+
+#reduce_lr reduces the learning rate when the metric has stoppes improving for 2 epochs.
+reduce_lr_factor = 0.25
+reduce_lr_patience = 3
+reduce_lr = ReduceLROnPlateau(monitor = 'val_mcrmse', factor = reduce_lr_factor, patience = reduce_lr_patience, verbose = 1)
+
+#Using EarlyStopping to stop the calculation upon reaching enough accuracy
+earlystop_min_delta = 0.0001
+earlystop_patience = 5
+earlystop = EarlyStopping(monitor = 'val_mcrmse',  mode="min", min_delta = earlystop_min_delta, patience = earlystop_patience, verbose = 1)
+
+csv_logger = CSVLogger(f'{log_directory}/training.log')
+
+callbacks = [reduce_lr, earlystop, csv_logger]
+
+logger.info(f"ReduceLROnPlateau parameters: factor = {reduce_lr_factor}, patience = {reduce_lr_patience}")
+logger.info(f"EarlyStopping parameters: min_delta = {earlystop_min_delta}, patience = {earlystop_patience}")
+
 def LSTM_CNN1D(comm_len,token_com):
     drop_lstm = 0.25
     drop_dense = 0.25
@@ -237,42 +291,39 @@ def LSTM_CNN1D(comm_len,token_com):
     return model
 
 # %%
-# Loading the saved model
+# Loading the model
 model=LSTM_CNN1D(comm_len,token_com)
 
 # TODO: Enable to load weights
 # model.load_weights("./data/LSTM_weights_final.h5")
 
 # %%
-#reduce_lr reduces the learning rate when the metric has stoppes improving for 2 epochs. 
-#Using EarlyStopping to stop the calculation upon reaching enough accuracy
-
-reduce_lr = ReduceLROnPlateau(monitor = 'val_mcrmse', factor = 0.25, patience = 2, verbose = 1)
-earlystop = EarlyStopping(monitor = 'val_mcrmse',  mode="min",min_delta = 0.01, patience = 5,verbose = 1)
-callbacks = [reduce_lr,earlystop]
-
-# %%
-hitory1=model.fit(x=X_train,y=y_train,epochs=30,batch_size=32,validation_data=(X_test, y_test),callbacks=callbacks)
+logger.info(f"Training Model with epoch = {str(epochs)}")
+hitory1=model.fit(x=X_train, y=y_train, epochs=epochs, batch_size=32, validation_data=(X_test, y_test), callbacks=callbacks)
+logger.info(f"Training complete!\n")
 
 # %%
 #saving the model and weights for future 
 from tensorflow.keras.models import Sequential, model_from_json
 model_json = model.to_json()
-with open("./data/LSTM_model_final.json","w") as json_file:
+model_save_json_filepath = f"{log_directory}/LSTM_model_final.json"
+weights_save_h5_filepath = f"{log_directory}/LSTM_weights_final.h5"
+logger.info(f"Saving model to {model_save_json_filepath} and weights to {weights_save_h5_filepath}")
+with open(model_save_json_filepath,"w") as json_file:
     json_file.write(model_json)
-
-model.save_weights("./data/LSTM_weights_final.h5")
+model.save_weights(weights_save_h5_filepath)
 
 # %%
 # Loading the saved model
-json_file=open('./data/LSTM_model_final.json','r')
+json_file=open(model_save_json_filepath,'r')
 loaded_model_json = json_file.read()
 json_file.close()
 loaded_model = model_from_json(loaded_model_json)
-loaded_model.load_weights("./data/LSTM_weights_final.h5")
+loaded_model.load_weights(weights_save_h5_filepath)
 
 # %%
 #predicted y
+logger.info(f"Testing model")
 y_pred = model.predict(X_test)
 
 # %% [markdown]
@@ -282,11 +333,16 @@ y_pred = model.predict(X_test)
 # calculating mean squared errors
 categories=training_data.columns
 from sklearn.metrics import mean_squared_error
-for i in range(6):
-    error = mean_squared_error(y_test[:,i],y_pred[:,i])
-    print("mean squared error in",categories[i+2],"is",error)
-
-# %%
+mse_error_filepath = f"{log_directory}/mse.log"
+with open(mse_error_filepath,"w") as mse_log_file:
+    error_str = ""
+    for i in range(6):
+        error = mean_squared_error(y_test[:,i],y_pred[:,i])
+        category_error_str = "mean squared error in " + str(categories[i+2]) + " is " + str(error) + "\n"
+        error_str += category_error_str
+    mse_log_file.write(error_str)
+logger.info(f"Saved MSE for categories in {mse_error_filepath}")
+logger.info(f"Testing complete")
 
 
 
